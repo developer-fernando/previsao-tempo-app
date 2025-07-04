@@ -1,23 +1,42 @@
-# Imagem com Apache + PHP 8.2
+# Use uma imagem base PHP com Apache
 FROM php:8.2-apache
 
-# Ativa mod_rewrite (necessário para .htaccess funcionar)
+# Habilita o módulo de reescrita do Apache (mod_rewrite)
 RUN a2enmod rewrite
 
-# Copia apenas o conteúdo da pasta public para o diretório raiz do Apache
-COPY public/ /var/www/html/
+# Define o diretório de trabalho principal dentro do contêiner
+# Todos os seus arquivos do projeto serão copiados para este diretório
+WORKDIR /app
 
-# Copia o restante do projeto (src/, vendor/, etc)
-COPY . /var/www/
+# Copia todo o conteúdo do seu projeto local para /app no contêiner
+# Isso inclui public/, src/, vendor/, composer.json, .htaccess, etc.
+COPY . /app/
 
-# Permissões
-RUN chown -R www-data:www-data /var/www/
+# Define as permissões corretas para o diretório da aplicação
+RUN chown -R www-data:www-data /app
 
-# Define o diretório do Apache
-WORKDIR /var/www/html
+# Instala o Composer se ainda não estiver disponível na imagem (geralmente já vem)
+# Se não estiver, você pode descomentar a linha abaixo:
+# COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-# Define variáveis de ambiente (opcional, mas recomendado)
-ENV APACHE_DOCUMENT_ROOT /var/www/html
+# Instala as dependências do Composer.
+# É crucial que isso seja feito DENTRO do contêiner, APÓS copiar o projeto.
+# --no-dev: Não instala dependências de desenvolvimento (ótimo para produção)
+# --optimize-autoloader: Otimiza o autoloader para melhor desempenho em produção
+RUN composer install --no-dev --optimize-autoloader
 
-# Porta padrão do Apache
+# Remove a configuração padrão do Apache
+RUN rm /etc/apache2/sites-enabled/000-default.conf
+
+# Copia sua configuração personalizada do Apache para dentro do contêiner
+# Esta configuração definirá /app/public como o DocumentRoot
+COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
+
+# Habilita sua nova configuração de site
+RUN a2ensite 000-default.conf
+
+# Exponha a porta que o Apache está ouvindo
 EXPOSE 80
+
+# Comando padrão para iniciar o Apache
+CMD ["apache2-foreground"]
