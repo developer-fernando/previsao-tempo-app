@@ -4,26 +4,32 @@ FROM php:8.2-apache
 # Habilita o módulo de reescrita do Apache (mod_rewrite)
 RUN a2enmod rewrite
 
+# Instala o Composer na imagem
+# Usa uma imagem temporária do Composer para copiar o binário
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+
 # Define o diretório de trabalho principal dentro do contêiner
-# Todos os seus arquivos do projeto serão copiados para este diretório
+# Este é o diretório raiz do seu projeto no contêiner
 WORKDIR /app
 
-# Copia todo o conteúdo do seu projeto local para /app no contêiner
-# Isso inclui public/, src/, vendor/, composer.json, .htaccess, etc.
-COPY . /app/
-
-# Define as permissões corretas para o diretório da aplicação
-RUN chown -R www-data:www-data /app
-
-# Instala o Composer se ainda não estiver disponível na imagem (geralmente já vem)
-# Se não estiver, você pode descomentar a linha abaixo:
-# COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+# Copia os arquivos do Composer (composer.json e composer.lock) primeiro
+# Isso aproveita o cache do Docker. Se esses arquivos não mudarem,
+# os passos seguintes (composer install) não precisarão ser reexecutados.
+COPY composer.json composer.lock ./
 
 # Instala as dependências do Composer.
-# É crucial que isso seja feito DENTRO do contêiner, APÓS copiar o projeto.
+# Este é o passo que CRIA a pasta 'vendor/' dentro do contêiner.
 # --no-dev: Não instala dependências de desenvolvimento (ótimo para produção)
 # --optimize-autoloader: Otimiza o autoloader para melhor desempenho em produção
 RUN composer install --no-dev --optimize-autoloader
+
+# Copia o restante do seu código fonte APÓS as dependências terem sido instaladas.
+# Isso garante que a pasta 'vendor/' já existe e o 'autoload.php' está no lugar.
+# Também aproveita o cache do Docker se apenas o código-fonte muda.
+COPY . .
+
+# Define as permissões corretas para o diretório da aplicação
+RUN chown -R www-data:www-data /app
 
 # Remove a configuração padrão do Apache
 RUN rm /etc/apache2/sites-enabled/000-default.conf
