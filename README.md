@@ -26,6 +26,8 @@ O projeto foi construído utilizando as seguintes tecnologias:
 * **WeatherAPI:** API de dados meteorológicos para obter informações precisas sobre o clima.
 * **XAMPP/Apache:** Ambiente de desenvolvimento local para execução do servidor PHP.
 * **Composer:** Gerenciador de dependências PHP (utilizado para carregar classes automaticamente via `autoload` [PSR-4] e gerenciar bibliotecas).
+* **Docker:** Para conteinerização da aplicação, garantindo um ambiente isolado e consistente para desenvolvimento e produção.
+* **Render:** Plataforma de nuvem para deployment contínuo e hospedagem da aplicação em ambiente de produção.
 
 ---
 
@@ -40,39 +42,20 @@ Este projeto, embora desenvolvido em PHP "puro" sem um framework full-stack, foi
     * **Requisições (Requests):** Validam e saneiam os dados de entrada, garantindo a segurança e a integridade antes que cheguem à lógica de negócio.
     * **Helpers (Auxiliares):** Funções utilitárias reutilizáveis para tarefas como renderização de views e escape de saída (segurança contra XSS).
 * **Injeção de Dependência (DI):** As dependências são passadas para as classes via construtores (ex: `ClimaService` injetado em `ClimaController`). Isso promove o **baixo acoplamento**, facilita a substituição de implementações e torna a aplicação mais fácil de testar (permitindo o uso de mocks para dependências externas).
-* **Gestão de Variáveis de Ambiente:** Utilização de arquivos `.env` para gerenciar chaves de API e configurações sensíveis. Isso garante que credenciais não sejam versionadas no controle de código-fonte e permite diferentes configurações por ambiente (desenvolvimento, homologação, produção).
+* **Gestão de Variáveis de Ambiente:** Utilização de um método resiliente na classe `App\Config\Env` para carregar configurações sensíveis. Embora o `.env` seja usado localmente, em produção, as variáveis são lidas diretamente do ambiente do sistema (ex: Render), garantindo que credenciais não sejam versionadas no controle de código-fonte e permitindo diferentes configurações por ambiente.
 * **Tratamento de Exceções Semântico:** Implementação de classes de exceção personalizadas (`CidadeNaoEncontradaException`, `ErroComunicacaoException`) para fornecer feedback detalhado e específico em caso de falhas, melhorando a depuração e a experiência do usuário.
 
 ---
 
-## 📈 Pensando em Escalabilidade e Futuro
+## ⚙️ Configuração e Deployment
 
-A arquitetura desta aplicação foi concebida com a **escalabilidade e a extensibilidade em mente**, mesmo em um contexto de PHP puro. Isso demonstra como os princípios de design de software podem ser aplicados para construir sistemas robustos.
+Este projeto é conteinerizado com Docker e implantado na plataforma Render. A configuração detalhada do ambiente é crucial para o seu funcionamento tanto em desenvolvimento local quanto em produção.
 
-1.  **Modularidade e Manutenibilidade:**
-    * A clara separação entre as camadas permite que partes da aplicação sejam desenvolvidas, testadas e mantidas de forma independente. Uma equipe pode trabalhar em diferentes serviços sem causar conflitos massivos.
-    * **Facilidade de Refatoração:** Se o provedor de clima mudar, apenas o `ClimaService` precisaria ser adaptado, sem afetar Controladores ou Views.
-    * **Acoplamento Flexível:** A Injeção de Dependência permite que, no futuro, componentes mais complexos (como um gerenciador de cache ou um cliente HTTP diferente) sejam "plugados" sem a necessidade de reescrever grandes partes do código.
+### **1. Ambiente Local (XAMPP/Apache)**
 
-2.  **Preparação para Alto Tráfego:**
-    * **Estratégias de Cache:** O `ClimaService` é o ponto ideal para a implementação de uma camada de cache (ex: Redis, Memcached). Isso reduziria drasticamente o número de requisições à API externa para cidades frequentemente consultadas, melhorando a performance sob carga e reduzindo custos com APIs de terceiros.
-    * **Otimização de Banco de Dados (Futuro):** Embora este projeto não utilize banco de dados, a estrutura permitiria a fácil integração com uma camada de persistência. A separação de responsabilidades asseguraria que a otimização de queries ou a adoção de um ORM não afetasse a lógica de negócio ou os controladores.
+Para rodar o projeto em seu ambiente de desenvolvimento local usando XAMPP:
 
-3.  **Expansão de Funcionalidades:**
-    * **Novas APIs e Serviços:** Se a aplicação precisar integrar com outras APIs (ex: geolocalização, notícias relacionadas ao clima), novos serviços podem ser adicionados e injetados nos controladores sem modificar a arquitetura existente.
-    * **Processamento Assíncrono:** Para operações que consomem mais tempo (como o envio de relatórios diários por e-mail ou o processamento de grandes volumes de dados históricos), a arquitetura suportaria a integração com filas de mensagens (ex: RabbitMQ, Apache Kafka). Os serviços poderiam enfileirar tarefas para serem processadas em segundo plano, liberando a resposta HTTP rapidamente.
-
-4.  **Migração para Frameworks (Decisão de Arquitetura):**
-    * A estrutura com Front Controller, autoloading (PSR-4), namespaces e a separação clara de responsabilidades segue os padrões de design que são a base de frameworks PHP modernos como Laravel, Symfony ou Zend Framework.
-    * Isso significa que, caso o projeto escale a um ponto onde os benefícios de um framework (ORM, sistema de rotas avançado, autenticação, etc.) superem a simplicidade do PHP puro, a migração seria significativamente mais suave e rápida, pois a maior parte da lógica de negócio e organização já estaria em conformidade com as melhores práticas.
-
----
-
-## ⚙️ Como Rodar o Projeto Localmente
-
-Siga os passos abaixo para configurar e executar o projeto em sua máquina:
-
-1.  **Pré-requisitos:** Certifique-se de ter o [XAMPP](https://www.apachefriends.org/pt_br/index.html) (ou WAMP/MAMP) instalado e configurado, com Apache e PHP funcionando.
+1.  **Pré-requisitos:** Certifique-se de ter o [XAMPP](https://www.apachefriends.com/pt_br/index.html) (ou WAMP/MAMP) instalado e configurado, com Apache e PHP funcionando.
 
 2.  **Clonar o Repositório:** Abra seu terminal ou prompt de comando e clone este repositório dentro do diretório `htdocs` do seu XAMPP (ex: `C:\xampp\htdocs\` no Windows ou `/Applications/XAMPP/htdocs/` no macOS).
     ```bash
@@ -81,30 +64,30 @@ Siga os passos abaixo para configurar e executar o projeto em sua máquina:
     cd previsao-tempo-app # Entre na pasta do projeto clonado
     ```
 
-3.  **Instalar Dependências:** Com o terminal ainda na pasta raiz do projeto, execute o Composer para instalar as dependências:
+3.  **Instalar Dependências:** Com o terminal ainda na pasta raiz do projeto, execute o Composer para instalar as dependências e gerar a pasta `vendor/` e o `autoload.php`.
     ```bash
     composer install
     ```
 
-4.  **Configurar a API Key:**
+4.  **Configurar Variáveis de Ambiente Local (`.env`):**
     * Crie um arquivo chamado `.env` na raiz do projeto (o mesmo nível de `composer.json` e `public`).
     * Obtenha sua chave gratuita da WeatherAPI em [https://www.weatherapi.com/](https://www.weatherapi.com/).
     * Adicione as seguintes linhas ao seu arquivo `.env`, substituindo `sua-chave-api` pela sua chave real:
+        ```dotenv
+        API_KEY="sua-chave-api"
+        API_URL="[http://api.weatherapi.com/v1](http://api.weatherapi.com/v1)"
         ```
-        API_KEY=sua-chave-api
-        API_URL=[http://api.weatherapi.com/v1](http://api.weatherapi.com/v1)
-        ```
+    * **Importante:** O arquivo `.env` **não** deve ser versionado no Git por questões de segurança. Ele deve estar listado no `.gitignore`. Um arquivo `.env.example` é fornecido como modelo.
 
-5.  **Ajustes no Apache (Importante para o Funcionamento do `.htaccess`):**
-    Para que o Apache processe corretamente as regras de reescrita e sirva o `public/index.php` como Front Controller, você **precisa** garantir que a diretiva `AllowOverride All` esteja configurada para o diretório `C:/xampp/htdocs` em seu `httpd.conf`. Além disso, o módulo `mod_rewrite` deve estar habilitado.
+5.  **Ajustes no Apache do XAMPP (Configuração do `httpd.conf` e `mod_rewrite`):**
+    Para que o Apache processe corretamente as regras de reescrita e sirva o `public/index.php` como Front Controller, você **precisa** garantir que a diretiva `AllowOverride All` esteja configurada para o diretório raiz dos seus projetos (`htdocs`) em seu `httpd.conf`. Além disso, o módulo `mod_rewrite` deve estar habilitado.
     * Abra `C:\xampp\apache\conf\httpd.conf`.
     * **Verifique/Descomente:** `LoadModule rewrite_module modules/mod_rewrite.so`
     * **Verifique/Altere:** Na seção `<Directory "C:/xampp/htdocs">`, defina `AllowOverride All`.
     * **Salve** o arquivo `httpd.conf` e **Reinicie o Apache** no painel do XAMPP.
 
 6.  **Configurar `.htaccess` na raiz do Projeto:**
-    Crie (ou adapte) o arquivo `C:/xampp/htdocs/previsao-tempo-app/.htaccess` com as seguintes regras para rotear todas as requisições para `public/index.php` e permitir o acesso a assets:
-
+    Certifique-se de que o arquivo `.htaccess` na raiz do seu projeto (`previsao-tempo-app/.htaccess`) possui as seguintes regras para rotear todas as requisições para `public/index.php` e permitir o acesso a assets estáticos:
     ```apache
     # Ativa o módulo de reescrita
     RewriteEngine On
@@ -112,12 +95,12 @@ Siga os passos abaixo para configurar e executar o projeto em sua máquina:
     # Define o diretório base para as regras de reescrita
     RewriteBase /previsao-tempo-app/ # Substitua pelo nome da sua pasta de projeto
 
-    # Regra para servir arquivos ou diretórios que existem diretamente
+    # Regra para servir arquivos ou diretórios que existem diretamente (assets, etc.)
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L] # Serve o arquivo/diretório diretamente e para as regras
 
-    # Regra de Segurança (Opcional, pode ser removida se causar conflitos no seu XAMPP):
+    # Regra de Segurança (Opcional, mas recomendado):
     # Bloqueia o acesso direto a arquivos sensíveis pela web (como .env, composer.json, .lock, vendor/)
     RewriteRule ^(composer\.json|composer\.lock|\.env|vendor/.*)$ - [F,L]
 
@@ -127,47 +110,131 @@ Siga os passos abaixo para configurar e executar o projeto em sua máquina:
     ```
     * **Importante:** Substitua `/previsao-tempo-app/` pelo nome real da sua pasta de projeto dentro de `htdocs`.
 
-7.  **Ajustar `basePath` nos Arquivos PHP:**
-    No `public/index.php` e em seus controladores (`ClimaController.php`, `ErrorController.php`), o `$basePath` deve ser calculado dinamicamente para corresponder ao caminho da sua pasta no servidor.
+7.  **Ajustar `basePath` e Links de Assets nos Arquivos PHP:**
+    No `public/index.php` e em seus arquivos de template (`public/templates/header.php`, `public/templates/footer.php`), o `$basePath` deve ser calculado dinamicamente para corresponder ao caminho da sua pasta no servidor local, e os links para assets devem usá-lo. Exemplo de cálculo em `public/index.php`:
     ```php
-    // Exemplo de cálculo do basePath
     $scriptName = $_SERVER['SCRIPT_NAME']; // Ex: /previsao-tempo-app/public/index.php
     $publicDir = dirname($scriptName);     // Ex: /previsao-tempo-app/public
     $basePath = dirname($publicDir);       // Ex: /previsao-tempo-app
-    // Para acesso direto em http://localhost/previsao-tempo-app/
     ```
-
-8.  **Ajustar Links de Assets nos Templates:**
-    Nos seus arquivos de template (`public/templates/header.php`, `public/templates/footer.php`), use o `$basePath` para referenciar seus assets:
+    E uso nos templates:
     ```html
     <link rel="stylesheet" href="<?= htmlspecialchars($basePath ?? '') ?>/public/assets/css/style.css">
-    <link rel="icon" href="<?= htmlspecialchars($basePath ?? '') ?>/public/favicon.png" type="image/png">
     <script src="<?= htmlspecialchars($basePath ?? '') ?>/public/assets/js/script.js"></script>
     ```
 
-9.  **Acessar a Aplicação:**
-    Após todos os passos acima, inicie o Apache no XAMPP, limpe o cache do seu navegador e acesse o projeto através de: `http://localhost/previsao-tempo-app/` (substitua `previsao-tempo-app` pelo nome da sua pasta de projeto).
+8.  **Acessar a Aplicação:** Após todos os passos acima, inicie o Apache no XAMPP, limpe o cache do seu navegador e acesse o projeto através de: `http://localhost/previsao-tempo-app/` (substitua `previsao-tempo-app` pelo nome da sua pasta de projeto).
 
----
+### **2. Ambiente de Produção (Docker e Render)**
 
-## 🎯 Funcionalidades Detalhadas
+A aplicação é conteinerizada com Docker para um ambiente de produção consistente e é implantada na plataforma Render.
 
-* **Busca Avançada:** Implementação de um sistema de autocomplete com requisições assíncronas (Fetch API) para oferecer sugestões de cidades em tempo real, melhorando a experiência e a precisão da busca.
-* **Precisão Geográfica:** Capacidade de diferenciar cidades com o mesmo nome em diferentes regiões ou países, garantindo que o usuário obtenha a previsão da localização exata desejada (ex: Barcelona, Espanha vs. Barcelona, Venezuela).
-* **Exibição Dinâmica:** Informações de clima atual e previsão de 3 a 7 dias (com base na configuração do botão "Ver Todos").
-* **Indicador de Chuva:** Uma barra gráfica intuitiva que visualiza a probabilidade de precipitação para cada dia.
-* **Interatividade:** Botões "Ver Todos" e "Ocultar" para expandir/recolher a previsão dos dias, controlando a quantidade de informação exibida.
-* **Interface Amigável:** Layout limpo, com design focado na legibilidade e facilidade de uso, adaptando-se a dispositivos móveis.
+#### **2.1. Configuração do Dockerfile**
 
----
+O `Dockerfile` é a receita para construir a imagem Docker da sua aplicação. Ele define o ambiente, instala dependências e configura o servidor web. Certifique-se de que este arquivo (`Dockerfile`) esteja na raiz do seu projeto no repositório.
 
-## 🌐 Integração com APIs Externas
+```dockerfile
+# Use uma imagem base PHP com Apache (PHP 8.2)
+FROM php:8.2-apache
 
-Este projeto integra-se com APIs externas para obter dados meteorológicos. A camada de `Services` é responsável por essa comunicação, garantindo que a lógica de negócio esteja desacoplada dos detalhes de implementação da API de terceiros.
+# Habilita o módulo de reescrita do Apache (mod_rewrite), essencial para o .htaccess
+RUN a2enmod rewrite
 
-* **Chaves de API Seguras:** As chaves de API são gerenciadas via variáveis de ambiente (`.env`), garantindo que credenciais sensíveis não sejam expostas no código-fonte ou no controle de versão. Isso também permite flexibilidade para alternar entre diferentes ambientes (desenvolvimento, produção) ou provedores de API sem alterar o código.
-* **Tratamento de Falhas Robusto:** O projeto implementa um tratamento de exceções detalhado para lidar com falhas de comunicação ou respostas inesperadas das APIs externas. Isso inclui a captura de erros de rede, tempo limite e respostas malformadas, fornecendo feedback amigável ao usuário e evitando que a aplicação quebre inesperadamente.
+# Instala o Composer na imagem, copiando o binário de uma imagem temporária do Composer.
+# Isso garante que o Composer esteja disponível para gerenciar as dependências.
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
+# Define o diretório de trabalho principal dentro do contêiner para /app.
+# Todos os arquivos do projeto serão copiados para este diretório.
+WORKDIR /app
+
+# Instala o Git dentro do contêiner. Isso é crucial para o Composer baixar
+# dependências que utilizam repositórios Git como fonte (via clonagem).
+RUN apt-get update && apt-get install -y git
+
+# Copia os arquivos do Composer (composer.json e composer.lock) primeiro.
+# Esta etapa otimiza o cache do Docker: se esses arquivos não mudarem,
+# o passo de instalação do Composer será reutilizado de um build anterior.
+COPY composer.json composer.lock ./
+
+# Instala as dependências PHP via Composer.
+# Este é o passo que cria a pasta 'vendor/' e o 'autoload.php' dentro do contêiner.
+# --no-dev: Não instala dependências de desenvolvimento (ideal para produção).
+# --optimize-autoloader: Otimiza o autoloader para melhor desempenho em produção.
+RUN composer install --no-dev --optimize-autoloader
+
+# Copia o restante do seu código fonte da aplicação para o diretório /app.
+# Isso é feito APÓS a instalação das dependências para aproveitar o cache do Docker
+# e garantir que a pasta 'vendor/' já esteja no lugar.
+COPY . .
+
+# Define as permissões corretas para o diretório da aplicação,
+# garantindo que o usuário do servidor web (www-data) possa ler e gravar arquivos.
+RUN chown -R www-data:www-data /app
+
+# Remove a configuração padrão do Apache que vem com a imagem base.
+RUN rm /etc/apache2/sites-enabled/000-default.conf
+
+# Copia a configuração personalizada do Apache para dentro do contêiner.
+# Esta configuração (apache-config.conf) define o 'DocumentRoot' para a pasta 'public'.
+COPY apache-config.conf /etc/apache2/sites-available/000-default.conf
+
+# Habilita o site com a sua nova configuração no Apache.
+RUN a2ensite 000-default.conf
+
+# Expõe a porta 80, que é a porta padrão que o Apache está ouvindo.
+EXPOSE 80
+
+# Define o comando padrão para iniciar o Apache em primeiro plano,
+# o que é necessário para execução em contêineres Docker.
+CMD ["apache2-foreground"]
+
+
+#### **2.2. Configuração do Apache (apache-config.conf)**
+
+Este arquivo, localizado na raiz do projeto junto ao `Dockerfile`, instrui o Apache a servir a aplicação a partir da subpasta `public/` e a processar as regras do `.htaccess`.
+
+```apache
+<VirtualHost *:80>
+    # Define o DocumentRoot do Apache para apontar para a sua pasta public/ dentro do contêiner (/app/public)
+    DocumentRoot /app/public
+
+    # Configurações para a pasta public
+    <Directory /app/public>
+        # Permite o uso de Options e FollowSymLinks (necessário para reescritas)
+        Options Indexes FollowSymLinks
+
+        # Habilita o uso de arquivos .htaccess dentro desta pasta, permitindo suas regras de roteamento e segurança.
+        AllowOverride All
+
+        # Permite o acesso a todos os recursos nesta pasta
+        Require all granted
+    </Directory>
+
+    # Configurações de log (opcional, mas recomendado para depuração em produção)
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+#### **2.3. Gestão de Variáveis de Ambiente para Produção (Render)**
+
+Em ambientes de produção, como o Render, variáveis de ambiente sensíveis (ex: chaves de API) **NÃO são armazenadas em arquivos `.env` no repositório**. Em vez disso, são configuradas diretamente na plataforma de hospedagem.
+
+* **No Render:** Acesse o painel do seu serviço, vá para a seção "Environment" e adicione cada `Key` (ex: `API_KEY`, `API_URL`) com seu respectivo `Value`.
+* **Acesso no Código:** Sua classe `App\Config\Env` (`src/Config/Env.php`) foi ajustada para ser resiliente: ela tenta ler o `.env` localmente (se existir), mas em ambientes onde o `.env` não é versionado, ela acessa diretamente as variáveis injetadas pelo ambiente do sistema (via `getenv()`), garantindo a funcionalidade sem expor credenciais.
+
+#### **2.4. Estratégia de Deploy com Render**
+
+O Render integra-se diretamente com o GitHub para um processo de **Deployment Contínuo (CI/CD)**:
+
+1.  **Conexão com GitHub:** Seu serviço Render é configurado para monitorar uma branch específica do seu repositório GitHub (ex: `main`).
+2.  **Disparo de Build:** A cada `git push` para essa branch monitorada, o Render automaticamente dispara um novo processo de build.
+3.  **Processo de Build (Baseado no Dockerfile):**
+    * O Render clona o repositório.
+    * Ele executa os comandos definidos no `Dockerfile`: instala o Git, copia `composer.json` e `composer.lock`, executa `composer install` (criando o `vendor/` e `autoload.php` dentro do contêiner), copia o restante do código, configura o Apache com `apache-config.conf` e define permissões.
+    * Se o build for bem-sucedido, uma nova imagem Docker é criada.
+4.  **Deployment:** A nova imagem Docker é implantada e o serviço é iniciado no Render, expondo sua aplicação na URL fornecida pela plataforma. As variáveis de ambiente configuradas no painel do Render são injetadas no ambiente do contêiner durante a execução.
+```
 ---
 
 ## 📝 Licença
@@ -179,5 +246,3 @@ Este projeto está licenciado sob a licença MIT. Consulte o arquivo [LICENSE](L
 **Fernando Santana**
 * [🔗 LinkedIn](https://www.linkedin.com/in/dev-fernando/)
 * [🔗 GitHub](https://github.com/developer-fernando)
-
----
