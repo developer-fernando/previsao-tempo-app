@@ -1,0 +1,19 @@
+{
+    "name": "fn99/api_clima",
+    "description": "Projeto de consumo de API de clima com PHP",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fernando Santana",
+            "email": "devfernando55@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}
