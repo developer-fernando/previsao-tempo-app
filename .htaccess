@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteBase /api_clima/
+
+RewriteCond %{REQUEST_URI} !^/api_clima/public/
+RewriteRule ^(.*)$ public/$1 [L]
+
+<FilesMatch "\.(env|ini|json|lock|md)$">
+    Require all denied
+</FilesMatch>
