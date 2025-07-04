@@ -12,6 +12,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 # Este é o diretório raiz do seu projeto no contêiner
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y git
 # Copia os arquivos do Composer (composer.json e composer.lock) primeiro
 # Isso aproveita o cache do Docker. Se esses arquivos não mudarem,
 # os passos seguintes (composer install) não precisarão ser reexecutados.
