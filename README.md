@@ -1,5 +1,8 @@
 # 🌦️ API Consulta de Clima - Projeto PHP
 
+## 🔗 Link da Aplicação (Produção)
+Acesse a aplicação online aqui: [https://previsao-tempo-app.onrender.com/](https://previsao-tempo-app.onrender.com/)
+
 ## 📜 Descrição
 Este projeto é uma aplicação web desenvolvida em PHP puro que permite aos usuários consultar o clima atual e a previsão para os próximos dias de qualquer cidade do mundo. O foco foi em criar uma interface de usuário intuitiva, responsiva e com um sistema de busca preciso, utilizando a **WeatherAPI**.
 
