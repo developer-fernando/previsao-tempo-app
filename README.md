@@ -2,7 +2,6 @@
 
 ## 🔗 Link da Aplicação (Produção)
 Acesse a aplicação online aqui: [https://previsao-tempo-app.onrender.com/](https://previsao-tempo-app.onrender.com/)
-
 ## 📜 Descrição
 Este projeto é uma aplicação web desenvolvida em PHP puro que permite aos usuários consultar o clima atual e a previsão para os próximos dias de qualquer cidade do mundo. O foco foi em criar uma interface de usuário intuitiva, responsiva e com um sistema de busca preciso, utilizando a **WeatherAPI**.
 
@@ -191,7 +190,7 @@ EXPOSE 80
 # Define o comando padrão para iniciar o Apache em primeiro plano,
 # o que é necessário para execução em contêineres Docker.
 CMD ["apache2-foreground"]
-
+```
 
 #### **2.2. Configuração do Apache (apache-config.conf)**
 
@@ -218,6 +217,7 @@ Este arquivo, localizado na raiz do projeto junto ao `Dockerfile`, instrui o Apa
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
+```
 
 #### **2.3. Gestão de Variáveis de Ambiente para Produção (Render)**
 
@@ -237,7 +237,7 @@ O Render integra-se diretamente com o GitHub para um processo de **Deployment Co
     * Ele executa os comandos definidos no `Dockerfile`: instala o Git, copia `composer.json` e `composer.lock`, executa `composer install` (criando o `vendor/` e `autoload.php` dentro do contêiner), copia o restante do código, configura o Apache com `apache-config.conf` e define permissões.
     * Se o build for bem-sucedido, uma nova imagem Docker é criada.
 4.  **Deployment:** A nova imagem Docker é implantada e o serviço é iniciado no Render, expondo sua aplicação na URL fornecida pela plataforma. As variáveis de ambiente configuradas no painel do Render são injetadas no ambiente do contêiner durante a execução.
-```
+
 ---
 
 ## 📝 Licença
