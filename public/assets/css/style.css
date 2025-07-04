@@ -1,0 +1,263 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f5f7fa;
+    color: #334155;
+}
+
+.container {
+    width: 90%;
+    max-width: 900px;
+    margin: 30px auto;
+}
+
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    color: #0EA5E9;
+    font-weight: 700;
+}
+
+
+footer {
+    text-align: center;
+    margin-top: 30px;
+    padding: 10px 0;
+    border-top: 1px solid #e2e8f0;
+    color: #64748B;
+}
+
+
+.form-busca {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-busca input {
+    padding: 10px;
+    width: 320px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px 0 0 8px;
+    outline: none;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+}
+
+.form-busca button {
+    padding: 11px 14px;
+    border: none;
+    background-color: #0EA5E9;
+    color: #fff;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.form-busca button:hover {
+    background-color: #0284c7;
+}
+
+
+button,
+.btn-acao {
+    padding: 10px 16px;
+    border: none;
+    background-color: #0EA5E9;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+button:hover,
+.btn-acao:hover {
+    background-color: #0284c7;
+}
+
+
+.secao-clima {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.secao-clima h2 {
+    margin-bottom: 15px;
+    color: #334155;
+    font-weight: 600;
+}
+
+.clima-atual {
+    margin-bottom: 20px;
+}
+
+.clima-atual h3 {
+    font-weight: 700;
+    color: #334155;
+}
+
+
+.card-clima {
+    background-color: #f9fafb;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.card-clima .cabecalho-card {
+    margin-bottom: 8px;
+    color: #334155;
+    font-weight: 600;
+}
+
+.card-clima .dados-principais {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-clima .precipitacao {
+    color: #0EA5E9;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.card-clima .precipitacao span {
+    display: block;
+}
+
+.card-clima .temperatura p {
+    margin: 2px 0;
+    font-weight: 600;
+}
+
+.card-clima .grafico {
+    margin-top: 10px;
+    background-color: #e5e7eb;
+    height: 6px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.card-clima .grafico .barra {
+    height: 100%;
+    background-color: #0EA5E9;
+    border-radius: 5px;
+    transition: width 0.4s ease;
+}
+
+.card-clima .grafico .barra-min,
+.card-clima .grafico .barra-max {
+    position: absolute;
+    top: -4px;
+    width: 10px;
+    height: 14px;
+    background-color: #9ca3af;
+    border-radius: 3px;
+}
+
+.card-clima .grafico .barra-min {
+    background-color: #0284c7;
+}
+
+.card-clima .grafico .barra-max {
+    background-color: #f97316;
+}
+
+
+.erro {
+    background-color: #ffe6e6;
+    border: 1px solid #cc0000;
+    padding: 10px;
+    margin: 10px 0;
+    color: #cc0000;
+    border-radius: 5px;
+}
+
+
+.aviso {
+    background-color: #fef9c3;
+    border: 1px solid #eab308;
+    padding: 10px;
+    margin: 10px 0;
+    color: #92400e;
+    border-radius: 5px;
+}
+
+
+.autocomplete-sugestoes {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 320px;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    z-index: 999;
+
+}
+
+
+.autocomplete-sugestoes:empty {
+    border: none;
+    box-shadow: none;
+}
+
+.item-sugestao {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.item-sugestao:last-child {
+    border-bottom: none;
+}
+
+.item-sugestao:hover {
+    background-color: #f0f0f0;
+}
+
+
+.item-sugestao.no-results {
+    color: #6c757d;
+    font-style: italic;
+    cursor: default;
+    background-color: #f8f9fa;
+    border-bottom: none;
+}
+
+.item-sugestao.no-results:hover {
+    background-color: #f8f9fa;
+}
+
+.item-sugestao {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
