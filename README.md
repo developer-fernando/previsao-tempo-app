@@ -77,8 +77,8 @@ Siga os passos abaixo para configurar e executar o projeto em sua máquina:
 2.  **Clonar o Repositório:** Abra seu terminal ou prompt de comando e clone este repositório dentro do diretório `htdocs` do seu XAMPP (ex: `C:\xampp\htdocs\` no Windows ou `/Applications/XAMPP/htdocs/` no macOS).
     ```bash
     cd /caminho/para/seu/htdocs
-    git clone [https://github.com/developer-fernando/seu-repositorio-api-clima.git](https://github.com/developer-fernando/seu-repositorio-api-clima.git)
-    cd seu-repositorio-api-clima # Entre na pasta do projeto clonado
+    git clone [https://github.com/developer-fernando/previsao-tempo-app.git](https://github.com/developer-fernando/previsao-tempo-app.git)
+    cd previsao-tempo-app # Entre na pasta do projeto clonado
     ```
 
 3.  **Instalar Dependências:** Com o terminal ainda na pasta raiz do projeto, execute o Composer para instalar as dependências:
@@ -103,14 +103,14 @@ Siga os passos abaixo para configurar e executar o projeto em sua máquina:
     * **Salve** o arquivo `httpd.conf` e **Reinicie o Apache** no painel do XAMPP.
 
 6.  **Configurar `.htaccess` na raiz do Projeto:**
-    Crie (ou adapte) o arquivo `C:/xampp/htdocs/seu-repositorio-api-clima/.htaccess` com as seguintes regras para rotear todas as requisições para `public/index.php` e permitir o acesso a assets:
+    Crie (ou adapte) o arquivo `C:/xampp/htdocs/previsao-tempo-app/.htaccess` com as seguintes regras para rotear todas as requisições para `public/index.php` e permitir o acesso a assets:
 
     ```apache
     # Ativa o módulo de reescrita
     RewriteEngine On
 
     # Define o diretório base para as regras de reescrita
-    RewriteBase /seu-repositorio-api-clima/ # Substitua pelo nome da sua pasta de projeto
+    RewriteBase /previsao-tempo-app/ # Substitua pelo nome da sua pasta de projeto
 
     # Regra para servir arquivos ou diretórios que existem diretamente
     RewriteCond %{REQUEST_FILENAME} -f [OR]
@@ -125,16 +125,16 @@ Siga os passos abaixo para configurar e executar o projeto em sua máquina:
     # Se a requisição não foi para um arquivo/diretório existente, reescreve para public/index.php
     RewriteRule ^(.*)$ public/index.php [QSA,L]
     ```
-    * **Importante:** Substitua `/seu-repositorio-api-clima/` pelo nome real da sua pasta de projeto dentro de `htdocs`.
+    * **Importante:** Substitua `/previsao-tempo-app/` pelo nome real da sua pasta de projeto dentro de `htdocs`.
 
 7.  **Ajustar `basePath` nos Arquivos PHP:**
     No `public/index.php` e em seus controladores (`ClimaController.php`, `ErrorController.php`), o `$basePath` deve ser calculado dinamicamente para corresponder ao caminho da sua pasta no servidor.
     ```php
     // Exemplo de cálculo do basePath
-    $scriptName = $_SERVER['SCRIPT_NAME']; // Ex: /seu-repositorio-api-clima/public/index.php
-    $publicDir = dirname($scriptName);     // Ex: /seu-repositorio-api-clima/public
-    $basePath = dirname($publicDir);       // Ex: /seu-repositorio-api-clima
-    // Para acesso direto em http://localhost/seu-repositorio-api-clima/
+    $scriptName = $_SERVER['SCRIPT_NAME']; // Ex: /previsao-tempo-app/public/index.php
+    $publicDir = dirname($scriptName);     // Ex: /previsao-tempo-app/public
+    $basePath = dirname($publicDir);       // Ex: /previsao-tempo-app
+    // Para acesso direto em http://localhost/previsao-tempo-app/
     ```
 
 8.  **Ajustar Links de Assets nos Templates:**
@@ -146,7 +146,7 @@ Siga os passos abaixo para configurar e executar o projeto em sua máquina:
     ```
 
 9.  **Acessar a Aplicação:**
-    Após todos os passos acima, inicie o Apache no XAMPP, limpe o cache do seu navegador e acesse o projeto através de: `http://localhost/seu-repositorio-api-clima/` (substitua `seu-repositorio-api-clima` pelo nome da sua pasta de projeto).
+    Após todos os passos acima, inicie o Apache no XAMPP, limpe o cache do seu navegador e acesse o projeto através de: `http://localhost/previsao-tempo-app/` (substitua `previsao-tempo-app` pelo nome da sua pasta de projeto).
 
 ---
 
